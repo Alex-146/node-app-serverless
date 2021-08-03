@@ -1,0 +1,9 @@
+POST http://localhost:9000/sendMail HTTP/1.1
+Content-Type: application/json
+
+{
+  "cucumber": 146
+}
+
+###
+GET http://localhost:9000/sendMail HTTP/1.1
