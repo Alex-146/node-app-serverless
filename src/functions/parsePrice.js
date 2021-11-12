@@ -1,23 +1,23 @@
-exports.handler = function(event, context, callback) {
+exports.handler = async (event, context, callback) => {
   
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
-    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+    // "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
+    // "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
   }
 
   const response = (code, data) => {
-    callback(null, {
+    return callback(null, {
       statusCode: code,
       headers: {
         "Content-Type": "application/json", ...corsHeaders
       },
       body: JSON.stringify(data)
-    });
+    })
   }
 
   const cors = () => {
-    callback(null, {
+    return callback(null, {
       statusCode: 200,
       headers: corsHeaders,
       body: "146"
@@ -32,17 +32,19 @@ exports.handler = function(event, context, callback) {
     return response(405, { message: "Method Not Allowed"})
   }
 
-  const { classFrom } = JSON.parse(event.body);
-  if (!classFrom) {
-    return response(400, { message: "Bad Request" });
-  }
+  try {
+    const { data } = JSON.parse(event.body)
 
-  const parsePrice = require("../providers/parsePrice");
-  parsePrice(classFrom)
-  .then(data => {
-    response(200, data)
-  })
-  .catch(error => {
-    response(500, { ok: false, message: error.message });
-  });
+    if (!data) {
+      return response(400, { message: "Bad Request" })
+    }
+
+    const entries = Array.isArray(data) ? data : [data]
+    const parsePrice = require("../providers/parsePrice")
+    const responseData = await parsePrice(entries)
+    return response(200, { ok: true, data: responseData })
+  }
+  catch (error) {
+    return response(200, { ok: false, message: error.message })
+  }
 }

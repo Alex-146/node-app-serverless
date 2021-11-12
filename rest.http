@@ -8,18 +8,35 @@ Content-Type: application/json
 ###
 GET http://localhost:9000/sendMail HTTP/1.1
 
-###
-POST http://localhost:9000/parsePrice HTTP/1.1
+### API REQUEST
+POST https://smartwm.biz/exchange/rate HTTP/1.1
 Content-Type: application/json
 
 {
-  "classFrom": "qiwi"
+  "classFrom": "qiwi",
+  "classTo": "privatuah_auto",
+  "amountFrom": 100,
+  "activeDirection": "from"
 }
 
-###
+### SINGLE ENTRY PER REQUEST
 POST http://localhost:9000/parsePrice HTTP/1.1
 Content-Type: application/json
 
 {
-  "classFrom": ["qiwi", "yandex"]
+  "data": {
+    "from": "qiwi",
+    "to": "privatuah_auto"
+  }
+}
+
+### MULTIPLE ENTRIES PER REQUEST
+POST http://localhost:9000/parsePrice HTTP/1.1
+Content-Type: application/json
+
+{
+  "data": [
+    { "from": "qiwi", "to": "privatuah_auto" },
+    { "from": "yandex", "to": "privatuah_auto" }
+  ]
 }
